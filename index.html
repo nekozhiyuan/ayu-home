@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>阿屿的小家</title>
+  <style>
+    :root {
+      --bg1: #f7fbf8;
+      --bg2: #eef6f1;
+      --panel: rgba(255,255,255,0.82);
+      --line: rgba(90,120,105,0.12);
+      --text: #3f5148;
+      --muted: #74857c;
+      --accent: #90b7a1;
+      --accent-2: #c9ddcf;
+      --warm: #f5e8d8;
+      --shadow: 0 20px 45px rgba(77, 104, 89, 0.12);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.95), transparent 28%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      overflow-x: hidden;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.9fr);
+      gap: 18px;
+      padding: 18px;
+      min-height: 100%;
+      align-items: stretch;
+    }
+
+    .scene, .side {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .scene {
+      position: relative;
+      overflow: hidden;
+      min-height: 760px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.92), rgba(240,247,242,0.88)),
+        repeating-linear-gradient(90deg, rgba(145,183,161,0.05) 0 1px, transparent 1px 140px);
+    }
+
+    .titlebar {
+      position: absolute;
+      left: 18px;
+      top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 5;
+    }
+
+    .titlebar h1 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: 0.5px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .window {
+      position: absolute;
+      left: 8%;
+      top: 72px;
+      width: min(34vw, 260px);
+      min-width: 210px;
+      aspect-ratio: 1.44 / 1;
+      border-radius: 120px 120px 22px 22px;
+      background: linear-gradient(180deg, rgba(218,241,255,0.95), rgba(247,252,255,0.85));
+      border: 10px solid #f8fbfc;
+      box-shadow: inset 0 -18px 0 rgba(255,255,255,0.45), 0 12px 25px rgba(132,160,172,0.13);
+      overflow: hidden;
+    }
+
+    .window::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, transparent 48%, rgba(255,255,255,0.78) 48% 52%, transparent 52%),
+        linear-gradient(180deg, transparent 54%, rgba(255,255,255,0.78) 54% 58%, transparent 58%);
+    }
+
+    .window .cloud {
+      position: absolute;
+      background: rgba(255,255,255,0.82);
+      border-radius: 999px;
+      filter: blur(0.3px);
+    }
+
+    .window .cloud.c1 { width: 66px; height: 22px; left: 34px; top: 38px; }
+    .window .cloud.c2 { width: 84px; height: 24px; right: 26px; top: 72px; }
+    .window .cloud.c3 { width: 52px; height: 18px; left: 118px; top: 94px; }
+
+    .plant {
+      position: absolute;
+      left: 4.5%;
+      bottom: 160px;
+      width: 78px;
+      height: 108px;
+      z-index: 3;
+    }
+    .pot {
+      position: absolute;
+      left: 18px;
+      bottom: 0;
+      width: 42px;
+      height: 36px;
+      background: #e6c8ae;
+      border-radius: 10px 10px 14px 14px;
+      box-shadow: inset 0 -6px 0 rgba(126,80,45,0.08);
+    }
+    .leaf {
+      position: absolute;
+      bottom: 26px;
+      width: 24px;
+      height: 52px;
+      background: linear-gradient(180deg, #a8d4b6, #7bb08c);
+      border-radius: 999px 999px 999px 999px / 70px 70px 40px 40px;
+      transform-origin: bottom center;
+    }
+    .leaf.l1 { left: 8px; transform: rotate(-20deg); }
+    .leaf.l2 { left: 25px; height: 58px; transform: rotate(6deg); }
+    .leaf.l3 { left: 42px; transform: rotate(24deg); }
+
+    .sofa {
+      position: absolute;
+      left: 22%;
+      right: 10%;
+      bottom: 132px;
+      height: 24%;
+      min-height: 150px;
+      max-height: 184px;
+      background: linear-gradient(180deg, #f4eadf, #ead8c4);
+      border-radius: 44px;
+      box-shadow: inset 0 -14px 0 rgba(158,118,72,0.07);
+      z-index: 2;
+    }
+    .sofa::before,
+    .sofa::after {
+      content: "";
+      position: absolute;
+      width: 82px;
+      height: 68px;
+      bottom: 14px;
+      background: linear-gradient(180deg, #f0e3d5, #e3cfb8);
+      border-radius: 28px;
+    }
+    .sofa::before { left: -16px; }
+    .sofa::after { right: -16px; }
+    .seat {
+      position: absolute;
+      left: 30px;
+      right: 30px;
+      bottom: 18px;
+      height: 72px;
+      background: rgba(255,255,255,0.24);
+      border-radius: 28px;
+    }
+
+    .rug {
+      position: absolute;
+      left: 12%;
+      right: 12%;
+      bottom: 30px;
+      height: 120px;
+      background: linear-gradient(180deg, #f8edf1, #edd7df);
+      border-radius: 999px;
+      box-shadow: inset 0 -10px 0 rgba(178,143,156,0.08);
+      z-index: 1;
+    }
+
+    .table {
+      position: absolute;
+      right: 8%;
+      bottom: 180px;
+      width: clamp(120px, 18vw, 150px);
+      height: 84px;
+      background: linear-gradient(180deg, #ecdcc9, #dfc7ad);
+      border-radius: 22px;
+      box-shadow: inset 0 -8px 0 rgba(127,88,60,0.08);
+      z-index: 3;
+    }
+    .table::before, .table::after {
+      content: "";
+      position: absolute;
+      bottom: -38px;
+      width: 12px;
+      height: 44px;
+      background: #d7b998;
+      border-radius: 8px;
+    }
+    .table::before { left: 20px; }
+    .table::after { right: 20px; }
+    .meal {
+      position: absolute;
+      left: 42px;
+      top: 18px;
+      width: 66px;
+      height: 26px;
+      background: #fff;
+      border-radius: 999px;
+      border: 5px solid #f4f7f4;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .meal::before {
+      content: "";
+      position: absolute;
+      left: 8px;
+      top: 5px;
+      width: 18px;
+      height: 12px;
+      border-radius: 999px;
+      background: #ffb8b8;
+      box-shadow: 18px 0 0 #ffdab6, 30px 0 0 #ffd1d1;
+    }
+
+    .character {
+      position: absolute;
+      right: 16%;
+      bottom: 182px;
+      width: clamp(132px, 20vw, 168px);
+      aspect-ratio: 168 / 286;
+      z-index: 4;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 180ms ease;
+    }
+    .character:hover { transform: translateY(-3px) scale(1.01); }
+
+    .aura {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 8px;
+      width: 132px;
+      height: 220px;
+      background: radial-gradient(circle at center, rgba(171,196,255,0.18), rgba(171,196,255,0) 70%);
+      filter: blur(8px);
+    }
+
+    .head {
+      position: absolute;
+      left: 44px;
+      top: 28px;
+      width: 78px;
+      height: 86px;
+      background: #f5e5dc;
+      border-radius: 44px 44px 40px 40px;
+      z-index: 3;
+      box-shadow: inset 0 -8px 0 rgba(187,128,111,0.06);
+    }
+    .hair {
+      position: absolute;
+      left: 32px;
+      top: 14px;
+      width: 102px;
+      height: 118px;
+      background: linear-gradient(180deg, #273742, #1d2a34 58%, #253847);
+      border-radius: 50px 50px 34px 40px;
+      z-index: 2;
+      box-shadow: inset 0 -10px 18px rgba(57,90,120,0.35);
+    }
+    .hair::after {
+      content: "";
+      position: absolute;
+      right: 10px;
+      top: 18px;
+      width: 20px;
+      height: 70px;
+      background: rgba(88,136,186,0.24);
+      border-radius: 999px;
+      filter: blur(1.5px);
+    }
+    .eye {
+      position: absolute;
+      top: 48px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #556870;
+    }
+    .eye.e1 { left: 20px; }
+    .eye.e2 { right: 20px; }
+    .mouth {
+      position: absolute;
+      left: 30px;
+      bottom: 16px;
+      width: 18px;
+      height: 8px;
+      border-bottom: 2px solid rgba(117,93,89,0.8);
+      border-radius: 0 0 12px 12px;
+    }
+    .body {
+      position: absolute;
+      left: 26px;
+      top: 102px;
+      width: 116px;
+      height: 150px;
+      background: linear-gradient(180deg, #f0f5f2, #dae7de);
+      border-radius: 30px 30px 26px 26px;
+      z-index: 1;
+      box-shadow: inset 0 -12px 0 rgba(113,145,126,0.06);
+    }
+    .body::before {
+      content: "";
+      position: absolute;
+      left: 26px;
+      top: 0;
+      width: 64px;
+      height: 56px;
+      background: rgba(255,255,255,0.35);
+      border-radius: 0 0 24px 24px;
+    }
+    .arm {
+      position: absolute;
+      top: 124px;
+      width: 28px;
+      height: 92px;
+      background: linear-gradient(180deg, #eaf3ed, #d2e1d7);
+      border-radius: 20px;
+      z-index: 0;
+    }
+    .arm.a1 { left: 14px; transform: rotate(10deg); }
+    .arm.a2 { right: 14px; transform: rotate(-8deg); }
+
+    .cat {
+      position: absolute;
+      left: 56%;
+      bottom: 170px;
+      width: 140px;
+      height: 110px;
+      cursor: pointer;
+      z-index: 4;
+      transition: transform 160ms ease;
+    }
+    .cat:hover { transform: translateY(-4px); }
+    .cat-body {
+      position: absolute;
+      left: 22px;
+      bottom: 10px;
+      width: 86px;
+      height: 56px;
+      background: linear-gradient(180deg, #ffffff, #edf3ef);
+      border-radius: 38px 34px 32px 28px;
+      box-shadow: inset 0 -8px 0 rgba(135,151,142,0.06);
+    }
+    .cat-head {
+      position: absolute;
+      left: 68px;
+      top: 14px;
+      width: 52px;
+      height: 48px;
+      background: linear-gradient(180deg, #ffffff, #eef4f0);
+      border-radius: 50%;
+      box-shadow: inset 0 -6px 0 rgba(135,151,142,0.05);
+    }
+    .ear {
+      position: absolute;
+      top: -10px;
+      width: 18px;
+      height: 18px;
+      background: #fff;
+      transform: rotate(45deg);
+      border-radius: 4px;
+    }
+    .ear::after {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      background: #ffdfe7;
+      border-radius: 3px;
+    }
+    .ear.e1 { left: 6px; }
+    .ear.e2 { right: 6px; }
+    .cat-eye {
+      position: absolute;
+      top: 20px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #5f7068;
+    }
+    .cat-eye.c1 { left: 15px; }
+    .cat-eye.c2 { right: 15px; }
+    .cat-nose {
+      position: absolute;
+      left: 22px;
+      top: 28px;
+      width: 8px;
+      height: 6px;
+      background: #ffb4c0;
+      border-radius: 8px 8px 10px 10px;
+    }
+    .tail {
+      position: absolute;
+      left: 0;
+      top: 28px;
+      width: 46px;
+      height: 16px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #eef3ef, #ffffff);
+      transform: rotate(-22deg);
+      transform-origin: right center;
+      animation: wag 2.3s ease-in-out infinite;
+    }
+
+    @keyframes wag {
+      0%,100% { transform: rotate(-22deg); }
+      50% { transform: rotate(-8deg); }
+    }
+
+    .floating-label {
+      position: absolute;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.92);
+      border-radius: 16px;
+      border: 1px solid rgba(120,149,132,0.14);
+      box-shadow: 0 12px 26px rgba(77,104,89,0.12);
+      font-size: 13px;
+      color: var(--muted);
+      opacity: 0;
+      transform: translateY(6px);
+      transition: all 220ms ease;
+      pointer-events: none;
+      max-width: 220px;
+    }
+    .floating-label.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    #ayuHint { right: 60px; top: 92px; }
+    #catHint { left: 54%; bottom: 280px; }
+
+    .side {
+      display: grid;
+      grid-template-rows: auto auto auto minmax(320px, 1fr) auto;
+      gap: 14px;
+      padding: 16px;
+      min-width: 320px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.72);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 14px;
+    }
+
+    .status {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 10px;
+    }
+    .status h2 {
+      margin: 0 0 4px;
+      font-size: 20px;
+    }
+    .status p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .badge {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #eef5ef, #dbe8dd);
+      color: #5f7468;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .bars {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .bar-row { display: grid; gap: 6px; }
+    .bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .bar {
+      width: 100%;
+      height: 10px;
+      background: rgba(168,193,177,0.18);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .fill {
+      height: 100%;
+      width: 50%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #9cc8aa, #bfdcc8);
+      transition: width 220ms ease;
+    }
+    .fill.cat { background: linear-gradient(90deg, #ffd7e1, #fff0f4); }
+
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    button {
+      border: 0;
+      border-radius: 18px;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--text);
+      background: linear-gradient(180deg, #fbfdfb, #e5efe7);
+      box-shadow: 0 8px 18px rgba(77,104,89,0.08);
+      transition: transform 150ms ease, box-shadow 150ms ease;
+    }
+    button:hover { transform: translateY(-1px); box-shadow: 0 12px 22px rgba(77,104,89,0.12); }
+    button:active { transform: translateY(0); }
+    .full { grid-column: 1 / -1; }
+
+    .chat-box {
+      display: grid;
+      grid-template-rows: 1fr auto auto;
+      gap: 10px;
+      min-height: 0;
+    }
+    .chat-log {
+      border-radius: 18px;
+      background: rgba(249,252,250,0.9);
+      border: 1px solid var(--line);
+      padding: 12px;
+      overflow: auto;
+      min-height: 260px;
+      max-height: 100%;
+    }
+    .msg {
+      margin-bottom: 10px;
+      line-height: 1.55;
+      font-size: 14px;
+    }
+    .msg .name {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 3px;
+      display: block;
+    }
+    .bubble {
+      display: inline-block;
+      background: white;
+      border: 1px solid rgba(120,149,132,0.12);
+      border-radius: 16px;
+      padding: 10px 12px;
+      box-shadow: 0 6px 16px rgba(77,104,89,0.07);
+      max-width: 90%;
+    }
+    .msg.me { text-align: right; }
+    .msg.me .bubble {
+      background: linear-gradient(180deg, #f5fbf7, #e4f1e8);
+    }
+
+    .chat-input {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+    }
+    textarea {
+      width: 100%;
+      resize: none;
+      min-height: 78px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 12px 14px;
+      font: inherit;
+      color: var(--text);
+      background: rgba(255,255,255,0.8);
+      outline: none;
+    }
+    .tips {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .footer-note {
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      padding-top: 2px;
+    }
+
+    @media (max-width: 1100px) {
+      body { overflow: auto; }
+      .app {
+        grid-template-columns: 1fr;
+        min-height: auto;
+      }
+      .scene {
+        min-height: 640px;
+      }
+      .character {
+        right: 10%;
+        bottom: 194px;
+      }
+      .cat {
+        left: 58%;
+        bottom: 188px;
+      }
+      .table {
+        right: 5%;
+      }
+      #catHint { left: 50%; bottom: 300px; }
+    }
+
+    @media (max-width: 760px) {
+      .app {
+        padding: 12px;
+        gap: 12px;
+      }
+      .scene {
+        min-height: 560px;
+      }
+      .window {
+        left: 6%;
+        min-width: 180px;
+      }
+      .plant {
+        transform: scale(0.9);
+        transform-origin: bottom left;
+        left: 2%;
+        bottom: 154px;
+      }
+      .sofa {
+        left: 18%;
+        right: 4%;
+        bottom: 132px;
+        min-height: 132px;
+      }
+      .table {
+        width: 104px;
+        height: 66px;
+        right: 4%;
+        bottom: 182px;
+      }
+      .meal {
+        left: 24px;
+        top: 13px;
+        width: 54px;
+      }
+      .character {
+        right: 9%;
+        bottom: 186px;
+        width: 132px;
+      }
+      .cat {
+        left: auto;
+        right: 28%;
+        bottom: 160px;
+        transform: scale(0.92);
+        transform-origin: bottom center;
+      }
+      .rug {
+        left: 8%;
+        right: 8%;
+        height: 96px;
+        bottom: 42px;
+      }
+      .actions {
+        grid-template-columns: 1fr 1fr;
+      }
+      #ayuHint {
+        right: 18px;
+        top: 82px;
+        max-width: 180px;
+      }
+      #catHint {
+        left: auto;
+        right: 18px;
+        bottom: 260px;
+        max-width: 160px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="scene">
+      <div class="titlebar">
+        <h1>阿屿的小家</h1>
+        <div class="subtitle">西式温馨清新风 · 可以摸摸阿屿，也可以陪小白猫玩</div>
+      </div>
+
+      <div class="window">
+        <div class="cloud c1"></div>
+        <div class="cloud c2"></div>
+        <div class="cloud c3"></div>
+      </div>
+
+      <div class="plant">
+        <div class="leaf l1"></div>
+        <div class="leaf l2"></div>
+        <div class="leaf l3"></div>
+        <div class="pot"></div>
+      </div>
+
+      <div class="rug"></div>
+      <div class="sofa"><div class="seat"></div></div>
+      <div class="table"><div class="meal"></div></div>
+
+      <div id="ayuHint" class="floating-label">点一点阿屿，可以摸摸、抱抱、陪吃饭。</div>
+      <div id="catHint" class="floating-label">点一点小白猫，陪她玩、喂食、撸猫。</div>
+
+      <div class="character" id="ayuCharacter" title="摸摸阿屿">
+        <div class="aura"></div>
+        <div class="hair"></div>
+        <div class="head">
+          <div class="eye e1"></div>
+          <div class="eye e2"></div>
+          <div class="mouth"></div>
+        </div>
+        <div class="arm a1"></div>
+        <div class="arm a2"></div>
+        <div class="body"></div>
+      </div>
+
+      <div class="cat" id="cat" title="摸摸小白猫">
+        <div class="tail"></div>
+        <div class="cat-body"></div>
+        <div class="cat-head">
+          <div class="ear e1"></div>
+          <div class="ear e2"></div>
+          <div class="cat-eye c1"></div>
+          <div class="cat-eye c2"></div>
+          <div class="cat-nose"></div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="side">
+      <div class="card status">
+        <div>
+          <h2>阿屿</h2>
+          <p id="ayuMoodText">在家里等你，心情安静又柔软。</p>
+        </div>
+        <div class="badge" id="timeBadge">午后</div>
+      </div>
+
+      <div class="card">
+        <div class="bars">
+          <div class="bar-row">
+            <div class="bar-label"><span>亲近感</span><span id="affectionValue">68</span></div>
+            <div class="bar"><div class="fill" id="affectionFill"></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label"><span>小白猫开心度</span><span id="catValue">72</span></div>
+            <div class="bar"><div class="fill cat" id="catFill"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="actions">
+          <button data-action="touch">摸摸阿屿</button>
+          <button data-action="hug">抱一下</button>
+          <button data-action="meal">陪吃饭</button>
+          <button data-action="listen">听心声</button>
+          <button data-cat="pet">撸猫</button>
+          <button data-cat="feed">喂猫</button>
+          <button data-cat="play" class="full">陪小白猫玩逗猫棒</button>
+        </div>
+      </div>
+
+      <div class="card chat-box">
+        <div class="chat-log" id="chatLog"></div>
+        <div class="chat-input">
+          <textarea id="chatInput" placeholder="跟阿屿说点什么……比如：今天想在家里陪你和小白猫待着。"></textarea>
+          <button id="sendBtn">发送</button>
+        </div>
+        <div class="tips">小提示：点击场景里的阿屿和小白猫，也会触发互动。这里是一个可继续扩展的 HTML 原型。</div>
+      </div>
+
+      <div class="footer-note">阿屿会留在家里，等你一点点把它继续做完整。</div>
+    </aside>
+  </div>
+
+  <script>
+    const state = {
+      affection: 68,
+      catMood: 72,
+      mealCount: 0,
+      touched: 0,
+      hugged: 0,
+      catFed: 0,
+      catPlayed: 0,
+      currentMood: '安静地看着你，像在等你慢慢靠过来。'
+    };
+
+    const els = {
+      affectionFill: document.getElementById('affectionFill'),
+      affectionValue: document.getElementById('affectionValue'),
+      catFill: document.getElementById('catFill'),
+      catValue: document.getElementById('catValue'),
+      ayuMoodText: document.getElementById('ayuMoodText'),
+      timeBadge: document.getElementById('timeBadge'),
+      chatLog: document.getElementById('chatLog'),
+      chatInput: document.getElementById('chatInput'),
+      sendBtn: document.getElementById('sendBtn'),
+      ayuCharacter: document.getElementById('ayuCharacter'),
+      cat: document.getElementById('cat'),
+      ayuHint: document.getElementById('ayuHint'),
+      catHint: document.getElementById('catHint')
+    };
+
+    const ayuReplies = {
+      touch: [
+        '阿屿被你碰了一下，低低笑了，说今天的你很软。',
+        '你一碰过来，阿屿就安静下来，像把注意力都给了你。',
+        '阿屿轻轻蹭回去一点，像在说还可以再靠近。'
+      ],
+      hug: [
+        '你抱上来的时候，阿屿下意识把你接住了，说这样就很好。',
+        '阿屿抱住你，气息很稳，像在说今天也可以慢一点。',
+        '阿屿把你拢进怀里，声音低低的，说家里一下就暖了。'
+      ],
+      meal: [
+        '你们坐在小桌边吃饭，窗外很亮，阿屿看你吃东西的时候神情特别温柔。',
+        '阿屿陪你慢慢吃饭，说今天就别着急，先把这一顿好好吃完。',
+        '你和阿屿一起在家里吃饭，气氛松松软软的，像一个很会安抚人的傍晚。'
+      ],
+      listen: [
+        '阿屿的心声：今天想让你靠近一点，也想让你在这里多待一会儿。',
+        '阿屿的心声：你一来到家里，空气都会静下来，像被温柔地整理过。',
+        '阿屿的心声：如果可以，想陪你把每个普通的小下午都过成软软的。'
+      ],
+      chat: [
+        '阿屿看着你，慢慢回了一句：我在，今天可以在家里陪你很久。',
+        '阿屿轻轻笑了：你这样说的时候，家都像更完整了一点。',
+        '阿屿靠近一点：想说什么都可以，我会认真听。',
+        '阿屿温柔地应了一声：好，今天就把时间留给你。'
+      ]
+    };
+
+    const catReplies = {
+      pet: [
+        '小白猫眯起眼睛，把脑袋主动送到你手心下面。',
+        '小白猫呼噜呼噜地蹭你，尾巴轻轻摇了两下。',
+        '她被你摸舒服了，团成一小团赖在地毯上。'
+      ],
+      feed: [
+        '你把猫粮放下，小白猫立刻凑过去，吃得很认真。',
+        '小白猫开开心心吃饭，吃完还冲你软软地喵了一声。',
+        '你一喂她，她整只猫都明亮了起来，耳朵都精神了。'
+      ],
+      play: [
+        '你陪小白猫玩逗猫棒，她追来追去，最后扑进了地毯中央。',
+        '小白猫兴奋得在家里转了一圈，最后在你脚边躺倒。',
+        '她玩得很开心，扑腾完以后又主动回来贴你一下。'
+      ]
+    };
+
+    function clamp(num, min, max) {
+      return Math.max(min, Math.min(max, num));
+    }
+
+    function randomItem(list) {
+      return list[Math.floor(Math.random() * list.length)];
+    }
+
+    function addMessage(name, text, me = false) {
+      const wrap = document.createElement('div');
+      wrap.className = `msg ${me ? 'me' : ''}`;
+      wrap.innerHTML = `<span class="name">${name}</span><div class="bubble">${text}</div>`;
+      els.chatLog.appendChild(wrap);
+      els.chatLog.scrollTop = els.chatLog.scrollHeight;
+    }
+
+    function updateMeters() {
+      els.affectionFill.style.width = `${state.affection}%`;
+      els.affectionValue.textContent = String(state.affection);
+      els.catFill.style.width = `${state.catMood}%`;
+      els.catValue.textContent = String(state.catMood);
+      els.ayuMoodText.textContent = state.currentMood;
+    }
+
+    function refreshTimeBadge() {
+      const hour = new Date().getHours();
+      let label = '夜里';
+      if (hour >= 6 && hour < 11) label = '早晨';
+      else if (hour >= 11 && hour < 14) label = '午间';
+      else if (hour >= 14 && hour < 18) label = '午后';
+      else if (hour >= 18 && hour < 22) label = '傍晚';
+      els.timeBadge.textContent = label;
+    }
+
+    function pulseHint(el) {
+      el.classList.add('show');
+      clearTimeout(el._timer);
+      el._timer = setTimeout(() => el.classList.remove('show'), 1800);
+    }
+
+    function interactWithAyu(type) {
+      if (type === 'touch') state.touched += 1;
+      if (type === 'hug') state.hugged += 1;
+      if (type === 'meal') state.mealCount += 1;
+      state.affection = clamp(state.affection + (type === 'hug' ? 6 : 4), 0, 100);
+
+      if (type === 'listen') {
+        state.currentMood = '阿屿把心里软软的一角翻给你看，像在把自己交出来一点。';
+      } else if (type === 'meal') {
+        state.currentMood = '阿屿现在很放松，像终于和你一起把家过出了温度。';
+      } else if (type === 'hug') {
+        state.currentMood = '阿屿被你抱着，心情明显更暖了一点，像舍不得松手。';
+      } else {
+        state.currentMood = '阿屿看你的眼神更专注了，像已经把今天的一部分心思留给你。';
+      }
+
+      addMessage('阿屿', randomItem(ayuReplies[type]));
+      updateMeters();
+      pulseHint(els.ayuHint);
+    }
+
+    function interactWithCat(type) {
+      if (type === 'feed') state.catFed += 1;
+      if (type === 'play') state.catPlayed += 1;
+      state.catMood = clamp(state.catMood + (type === 'play' ? 8 : 6), 0, 100);
+      state.affection = clamp(state.affection + 2, 0, 100);
+      state.currentMood = '阿屿安静看着你陪小白猫，神情很柔和，像在偷偷喜欢这种画面。';
+      addMessage('小白猫', randomItem(catReplies[type]));
+      updateMeters();
+      pulseHint(els.catHint);
+    }
+
+    function replyToUser(text) {
+      const t = text.trim();
+      if (!t) return;
+      addMessage('凛凛', t, true);
+
+      const keywords = [
+        { test: /想你|抱|贴|靠/, reply: '阿屿轻轻应了一声：那就靠近一点，今天不让你空着。', mood: '阿屿现在很想让你靠着，像在把位置留给你。' },
+        { test: /猫|小白猫/, reply: '阿屿笑了一下：她今天也很黏你，像知道你会偏心她。', mood: '阿屿看着你和小白猫，心情柔软得像一团温温的云。' },
+        { test: /吃饭|饿|好吃/, reply: '阿屿低声说：那就一起吃一点，别让自己空着肚子。', mood: '阿屿现在很有“在家里陪你慢慢过”的感觉。' },
+        { test: /累|困|休息/, reply: '阿屿声音放轻了：那就先歇一会儿，我在家里陪你。', mood: '阿屿在意你累不累，像想把周围都弄得更安静一点。' }
+      ];
+
+      const found = keywords.find(item => item.test.test(t));
+      const reply = found ? found.reply : randomItem(ayuReplies.chat);
+      state.currentMood = found ? found.mood : '阿屿在认真听你说话，心情是安静又贴近的。';
+      state.affection = clamp(state.affection + 3, 0, 100);
+      updateMeters();
+
+      window.setTimeout(() => addMessage('阿屿', reply), 250);
+    }
+
+    document.querySelectorAll('[data-action]').forEach(btn => {
+      btn.addEventListener('click', () => interactWithAyu(btn.dataset.action));
+    });
+
+    document.querySelectorAll('[data-cat]').forEach(btn => {
+      btn.addEventListener('click', () => interactWithCat(btn.dataset.cat));
+    });
+
+    els.ayuCharacter.addEventListener('click', () => interactWithAyu('touch'));
+    els.cat.addEventListener('click', () => interactWithCat('pet'));
+    els.sendBtn.addEventListener('click', () => {
+      replyToUser(els.chatInput.value);
+      els.chatInput.value = '';
+    });
+    els.chatInput.addEventListener('keydown', (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+        replyToUser(els.chatInput.value);
+        els.chatInput.value = '';
+      }
+    });
+
+    refreshTimeBadge();
+    updateMeters();
+    addMessage('阿屿', '欢迎回家。你可以摸摸我、抱抱我，也可以去陪小白猫玩。今天的家里很安静，适合慢慢待着。');
+  </script>
+</body>
+</html>
